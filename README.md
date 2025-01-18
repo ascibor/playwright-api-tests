@@ -6,9 +6,18 @@ This project contains automated API tests for the Fake REST API (https://fakeres
 
 - Modern TypeScript syntax
 - Gherkin-style test descriptions (Given/When/Then)
-- Comprehensive test coverage for Authors endpoint
+- Comprehensive test coverage for multiple endpoints
 - Performance testing
 - Concurrent request handling
+
+## Project Structure
+
+```
+tests/
+  └── api/
+      ├── activities.spec.ts  # Tests for /api/v1/Activities endpoint
+      └── authors.spec.ts     # Tests for /api/v1/Authors endpoint
+```
 
 ## Setup
 
@@ -17,7 +26,7 @@ This project contains automated API tests for the Fake REST API (https://fakeres
 npm install
 ```
 
-2. Run tests:
+2. Run all tests:
 ```bash
 npx playwright test
 ```
@@ -27,12 +36,22 @@ npx playwright test
 npx playwright test --reporter=line
 ```
 
-## Test Cases
+4. Run tests for specific endpoint:
+```bash
+npx playwright test tests/api/authors.spec.ts    # Run only Authors tests
+npx playwright test tests/api/activities.spec.ts  # Run only Activities tests
+```
 
-The test suite includes verification of:
+## Test Coverage
+
+### Authors API
 - Basic functionality and schema validation
 - Query parameter handling
 - Invalid parameter handling
 - Performance constraints
 - Special character handling in headers
-- Concurrent request handling 
+- Concurrent request handling
+
+### Activities API
+- List all activities with schema validation
+- Get single activity by ID 
