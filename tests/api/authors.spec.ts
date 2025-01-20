@@ -89,4 +89,189 @@ test.describe('Authors API', () => {
       });
     });
   });
+
+  test.describe('POST', () => {
+    test('create author endpoint', async ({ request }) => {
+      await test.step('POST /api/v1/Authors - should create new author with valid data', async () => {
+        // given
+        const newAuthor = {
+          id: 0,
+          idBook: 1,
+          firstName: "John",
+          lastName: "Doe"
+        };
+
+        // when
+        const response = await request.post('/api/v1/Authors', {
+          data: newAuthor,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const responseBody = await response.json() as Author;
+
+        // then
+        expect(response.status()).toBe(200);
+        expect(responseBody).toHaveProperty('id', expect.any(Number));
+        expect(responseBody.firstName).toBe(newAuthor.firstName);
+        expect(responseBody.lastName).toBe(newAuthor.lastName);
+        expect(responseBody.idBook).toBe(newAuthor.idBook);
+      });
+
+      await test.step('POST /api/v1/Authors - should handle missing required fields', async () => {
+        // given
+        const invalidAuthor = {
+          id: 0,
+          idBook: 1
+        };
+
+        // when
+        const response = await request.post('/api/v1/Authors', {
+          data: invalidAuthor,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const responseBody = await response.json();
+
+        // then
+        expect(response.status()).toBe(200);
+        expect(responseBody).toHaveProperty('firstName', null);
+        expect(responseBody).toHaveProperty('lastName', null);
+      });
+
+      await test.step('POST /api/v1/Authors - should reject invalid data types', async () => {
+        // given
+        const invalidAuthor = {
+          id: "invalid",
+          idBook: "not-a-number",
+          firstName: 123,
+          lastName: 456
+        };
+
+        // when
+        const response = await request.post('/api/v1/Authors', {
+          data: invalidAuthor,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // then
+        expect(response.status()).toBe(400);
+      });
+    });
+  });
+
+  test.describe('PUT', () => {
+    test('update author endpoint', async ({ request }) => {
+      await test.step('PUT /api/v1/Authors/{id} - should update existing author', async () => {
+        // given
+        const authorId = 1;
+        const updatedAuthor = {
+          id: authorId,
+          idBook: 2,
+          firstName: "Jane",
+          lastName: "Smith"
+        };
+
+        // when
+        const response = await request.put(`/api/v1/Authors/${authorId}`, {
+          data: updatedAuthor,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const responseBody = await response.json() as Author;
+
+        // then
+        expect(response.status()).toBe(200);
+        expect(responseBody.id).toBe(authorId);
+        expect(responseBody.firstName).toBe(updatedAuthor.firstName);
+        expect(responseBody.lastName).toBe(updatedAuthor.lastName);
+        expect(responseBody.idBook).toBe(updatedAuthor.idBook);
+      });
+
+      await test.step('PUT /api/v1/Authors/{id} - should handle non-existent ID', async () => {
+        // given
+        const nonExistentId = 999999;
+        const updatedAuthor = {
+          id: nonExistentId,
+          idBook: 2,
+          firstName: "Jane",
+          lastName: "Smith"
+        };
+
+        // when
+        const response = await request.put(`/api/v1/Authors/${nonExistentId}`, {
+          data: updatedAuthor,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // then
+        expect(response.status()).toBe(200);
+      });
+
+      await test.step('PUT /api/v1/Authors/{id} - should handle invalid data types', async () => {
+        // given
+        const authorId = 1;
+        const invalidAuthor = {
+          id: "invalid",
+          idBook: "not-a-number",
+          firstName: 123,
+          lastName: 456
+        };
+
+        // when
+        const response = await request.put(`/api/v1/Authors/${authorId}`, {
+          data: invalidAuthor,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // then
+        expect(response.status()).toBe(400);
+      });
+    });
+  });
+
+  test.describe('DELETE', () => {
+    test('delete author endpoint', async ({ request }) => {
+      await test.step('DELETE /api/v1/Authors/{id} - should delete existing author', async () => {
+        // given
+        const authorId = 1;
+
+        // when
+        const response = await request.delete(`/api/v1/Authors/${authorId}`);
+
+        // then
+        expect(response.status()).toBe(200);
+      });
+
+      await test.step('DELETE /api/v1/Authors/{id} - should handle non-existent ID', async () => {
+        // given
+        const nonExistentId = 999999;
+
+        // when
+        const response = await request.delete(`/api/v1/Authors/${nonExistentId}`);
+
+        // then
+        expect(response.status()).toBe(200);
+      });
+
+      await test.step('DELETE /api/v1/Authors/{id} - should handle invalid ID format', async () => {
+        // given
+        const invalidId = 'invalid-id';
+
+        // when
+        const response = await request.delete(`/api/v1/Authors/${invalidId}`);
+
+        // then
+        expect(response.status()).toBe(400);
+      });
+    });
+  });
 }); 

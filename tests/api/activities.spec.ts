@@ -149,4 +149,112 @@ test.describe('Activities API', () => {
       });
     });
   });
+
+  test.describe('PUT', () => {
+    test('update activity endpoint', async ({ request }) => {
+      await test.step('PUT /api/v1/Activities/{id} - should update existing activity', async () => {
+        // given
+        const activityId = 1;
+        const updatedActivity = {
+          id: activityId,
+          title: "Updated Activity",
+          completed: true
+        };
+
+        // when
+        const response = await request.put(`/api/v1/Activities/${activityId}`, {
+          data: updatedActivity,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const responseBody = await response.json() as Activity;
+
+        // then
+        expect(response.status()).toBe(200);
+        expect(responseBody.id).toBe(activityId);
+        expect(responseBody.title).toBe(updatedActivity.title);
+        expect(responseBody.completed).toBe(updatedActivity.completed);
+      });
+
+      await test.step('PUT /api/v1/Activities/{id} - should handle non-existent ID', async () => {
+        // given
+        const nonExistentId = 999999;
+        const updatedActivity = {
+          id: nonExistentId,
+          title: "Updated Activity",
+          completed: true
+        };
+
+        // when
+        const response = await request.put(`/api/v1/Activities/${nonExistentId}`, {
+          data: updatedActivity,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // then
+        expect(response.status()).toBe(200);
+      });
+
+      await test.step('PUT /api/v1/Activities/{id} - should handle invalid data types', async () => {
+        // given
+        const activityId = 1;
+        const invalidActivity = {
+          id: "invalid",
+          title: 123,
+          completed: "not-boolean"
+        };
+
+        // when
+        const response = await request.put(`/api/v1/Activities/${activityId}`, {
+          data: invalidActivity,
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // then
+        expect(response.status()).toBe(400);
+      });
+    });
+  });
+
+  test.describe('DELETE', () => {
+    test('delete activity endpoint', async ({ request }) => {
+      await test.step('DELETE /api/v1/Activities/{id} - should delete existing activity', async () => {
+        // given
+        const activityId = 1;
+
+        // when
+        const response = await request.delete(`/api/v1/Activities/${activityId}`);
+
+        // then
+        expect(response.status()).toBe(200);
+      });
+
+      await test.step('DELETE /api/v1/Activities/{id} - should handle non-existent ID', async () => {
+        // given
+        const nonExistentId = 999999;
+
+        // when
+        const response = await request.delete(`/api/v1/Activities/${nonExistentId}`);
+
+        // then
+        expect(response.status()).toBe(200);
+      });
+
+      await test.step('DELETE /api/v1/Activities/{id} - should handle invalid ID format', async () => {
+        // given
+        const invalidId = 'invalid-id';
+
+        // when
+        const response = await request.delete(`/api/v1/Activities/${invalidId}`);
+
+        // then
+        expect(response.status()).toBe(400);
+      });
+    });
+  });
 }); 
