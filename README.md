@@ -143,3 +143,16 @@ npx playwright test tests/api/users.spec.ts       # Run only Users tests
 - DELETE /api/v1/Users/{id}
   - Delete existing user
   - Handle invalid ID format 
+
+## GitHub Actions Workflow
+
+This project includes a GitHub Actions workflow for running Playwright tests automatically on push and pull request events. The workflow is defined in the `.github/workflows/playwright.yaml` file and includes the following steps:
+
+- Checkout the repository
+- Set up Node.js
+- Install dependencies
+- Install Playwright with dependencies
+- Run the Playwright tests
+- Upload the test report as an artifact
+
+You can view the workflow results in the "Actions" tab of your GitHub repository. 
